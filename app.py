@@ -1,19 +1,18 @@
 #import dependencies
-import numpy as np
-import pandas as pd
-import datetime as dt
-import sqlalchemy
-from sqlalchemy.ext.automap import automap_base
-from sqlalchemy.orm import Session
-from sqlalchemy import create_engine, func
+from flask import Flask
+app = Flask(__name__)
 
 #Use Flask to create your routes.
+@app.route("/")
+def route_1():
+    return(
+        f"Home Page<br/>"
+        f"<br/>"
+        f"Precipitation Data<br/>"
+        f"<br/>"
+        f"Temperature Data<br/>"
+        f"<br/>"
+
+    )
 
 
-/api/v1.0/precipitation
-
-
-Convert the query results to a dictionary using date as the key and prcp as the value.
-
-
-Return the JSON representation of your dictionary.
