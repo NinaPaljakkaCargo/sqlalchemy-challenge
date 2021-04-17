@@ -41,6 +41,9 @@ def route_1():
 
 @app.route("/api/v1.0/precipitation")
 def precipitation_data():
-    recent_date = session.query(func.max(measurement_class.date)).first()
-    last_12months = dt.date(2017,8,23)-dt.timedelta(days=365)
+    return(
+        recent_date = session.query(func.max(measurement_class.date)).first()
+        last_12months = dt.date(2017,8,23)-dt.timedelta(days=365)
+        last_12Precip = session.query(measurement_class.date, measurement_class.prcp).filter(measurement_class.date >= last_12months).all()
+    )
 
