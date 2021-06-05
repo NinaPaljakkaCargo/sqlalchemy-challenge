@@ -1,11 +1,11 @@
 #import dependencies
-from matplotlib import style
-style.use('fivethirtyeight')
 from flask import Flask, jsonify
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine, func
+import numpy as np
+import datetime as dt
 
 engine = create_engine("sqlite:///hawaii2.sqlite")
 base = automap_base()
@@ -63,4 +63,13 @@ def stations():
     station_info = list(np.ravel(results))
     
     return jsonify(station_info)
+
+
+@app.route("/api/v1.0/tobs")
+def tobs():
+    session = Session(engine)
+    dates = (session.query(measurement_class.date).order_by(measurement_class.date.desc()).first())
+    dates_string = str(dates)
+    
+    station_list = (session.query(measurement_class.station, func.count(measurement_class.station)).group_by(measurement_class.station).desc()).all()
 
