@@ -1,7 +1,6 @@
 #import dependencies
 from matplotlib import style
 style.use('fivethirtyeight')
-import matplotlib.pyplot as plt
 from flask import Flask, jsonify
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
@@ -39,11 +38,29 @@ def route_1():
         f"-->Temperature data for dates between the start and end dates<br/>"
     )
 
+
 @app.route("/api/v1.0/precipitation")
 def precipitation_data():
-    return(
-        recent_date = session.query(func.max(measurement_class.date)).first()
-        last_12months = dt.date(2017,8,23)-dt.timedelta(days=365)
-        last_12Precip = session.query(measurement_class.date, measurement_class.prcp).filter(measurement_class.date >= last_12months).all()
-    )
+    session = Session(engine)
+    recent_date = session.query(func.max(measurement_class.date)).first()
+    last_12months = dt.date(2017,8,23)-dt.timedelta(days=365)
+    last_12Precip = session.query(measurement_class.date,measurement_class.prcp).filter(measurement_class.date >= last_12months).all()
+        
+    precip_dict = []
+    for row in recent_date:
+        dt_dict = {}
+        dt_dict["date"]= row.date
+        dt_dict["tobs"]= row.tobs
+        precip_dict.append(dt_dict)
+        
+    return jsonify(precip_dict)
+
+
+@app.route("/api/v1.0/stations")
+def stations():
+    session = Session(engine)
+    session_res = session.query(Station.name).all()
+    station_info = list(np.ravel(results))
+    
+    return jsonify(station_info)
 
