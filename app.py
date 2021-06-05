@@ -46,12 +46,12 @@ def precipitation_data():
     last_12months = dt.date(2017,8,23)-dt.timedelta(days=365)
     last_12Precip = session.query(measurement_class.date,measurement_class.prcp).filter(measurement_class.date >= last_12months).all()
         
-    precip_dict = []
+    precip_list = []
     for row in recent_date:
         dt_dict = {}
         dt_dict["date"]= row.date
         dt_dict["tobs"]= row.tobs
-        precip_dict.append(dt_dict)
+        precip_list.append(dt_dict)
         
     return jsonify(precip_dict)
 
@@ -72,4 +72,39 @@ def tobs():
     dates_string = str(dates)
     
     station_list = (session.query(measurement_class.station, func.count(measurement_class.station)).group_by(measurement_class.station).desc()).all()
+    
+    tobs_list = []
+    for result in results:
+        tobs_dict = {}
+        tobs_dict["date"]= result[1]
+        tobs_dict["station"]= result[0]
+        tobs_dict["Temperature"] = int(result[2])
+        tobs_list.append(tobs_dict)
+
+    return jsonify(tobs_list)
+
+
+#When given the start only, calculate TMIN, TAVG, and TMAX for all dates greater than and equal to the start date.
+@app.route("/api/v1.0/<start>")
+def start_only(start):
+    session = Session(engine)
+    start_results = (session.query(func.min(measurement_class.tobs),
+                                   func.avg(measurement_class.tobs),
+                               func.max(measurement_class.tobs)).filter(measurement_class.date >= start).all())
+    
+    tobs_min = start_results[0][0]
+    tobs_avg = start_results[0][1]
+    tobs_max = start_results[0][2]
+    
+    tobs_print = (['Start Date: ' + start,
+                   'Min Temp Recorded: ' + str(tobs_min),
+                   'Average Temp Recorded: ' + str(tobs_avg),
+                   'Max Temp Recorded: ' + str(tobs_max)])
+    
+    return jsonify(tobs_print)
+
+
+
+    
+    
 
