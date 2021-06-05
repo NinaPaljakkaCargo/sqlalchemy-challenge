@@ -103,6 +103,32 @@ def start_only(start):
     
     return jsonify(tobs_print)
 
+#When given the start and the end date, calculate the TMIN, TAVG, and TMAX for dates between the start and end date inclusive.
+@app.route("/api/v1.0/<start>/<end>")
+def startANDend(start, end):
+    session = Session(engine)
+    startEnd_results = (session.query(func.min(measurement_class.tobs),
+                                   func.avg(measurement_class.tobs),
+                               func.max(measurement_class.tobs)).filter(measurement_class.date >= start).filter(measurement_class.date <= end).all())
+    
+    tobs_min = start_results[0][0]
+    tobs_avg = start_results[0][1]
+    tobs_max = start_results[0][2]
+    
+    tobs_print = (['Start Date: ' + start,
+                   'End Date: ' + end,
+                   'Min Temp Recorded: ' + str(tobs_min),
+                   'Average Temp Recorded: ' + str(tobs_avg),
+                   'Max Temp Recorded: ' + str(tobs_max)])
+    
+    return jsonify(tobs_print)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+    
+    
+
 
 
     
